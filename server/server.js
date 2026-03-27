@@ -4,6 +4,7 @@ import {connectDb} from './config/db.js';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import authRoutes from './routes/auth.routes.js';
+import userRoutes from './routes/user.routes.js';
 
 dotenv.config();
 
@@ -26,6 +27,7 @@ app.get('/', (req, res) => {
 
 //custom routes
 app.use("/api/auth", authRoutes);
+app.use("/api/user", userRoutes); // Add user routes
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
