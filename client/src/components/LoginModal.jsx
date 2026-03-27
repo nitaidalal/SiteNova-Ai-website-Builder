@@ -5,8 +5,11 @@ import { signInWithPopup } from 'firebase/auth'
 import { auth, googleProvider } from '../lib/firebase'
 import toast from 'react-hot-toast'
 import api from '../lib/api'
+import { useDispatch } from 'react-redux'
+import { setUser } from '../redux/userSlice'
 
 const LoginModal = ({open, onClose }) => {
+  const dispatch = useDispatch()
     const handleGoogleAuth =async () => {
         try {
             const result = await signInWithPopup(auth, googleProvider);
@@ -17,10 +20,14 @@ const LoginModal = ({open, onClose }) => {
               avatar: photoURL,
             };
             const response = await api.post('/auth/google-auth', payload);
+            const loggedInUser = response?.data?.data?.user;
+            if (loggedInUser) {
+              dispatch(setUser(loggedInUser));
+            }
             toast.success(response.data.message)
             onClose();
         } catch (error) {
-            toast.error(error?.data?.response?.message || "Error during Google login.");
+            toast.error(error?.response?.data?.message || "Error during Google login.");
         }
     }
   return (
