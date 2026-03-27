@@ -1,11 +1,9 @@
 import { motion } from "framer-motion";
-import { useDispatch, useSelector } from "react-redux";
-import axios from "axios";
-import { toggleTheme } from "../redux/themeSlice";
-import { logoutSuccess } from "../redux/authSlice";
+import { useSelector } from "react-redux";
+import Navbar from "../components/Navbar";
 import LoginModal from "../components/LoginModal";
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 const highlights = [
   {
@@ -26,57 +24,14 @@ const highlights = [
 ];
 
 const Home = () => {
-  const dispatch = useDispatch();
-  const { theme } = useSelector((state) => state.theme);
-  const { user } = useSelector((state) => state.auth);
+  const { user } = useSelector((state) => state.user);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const navigate = useNavigate();
 
-  const handleLogout = async () => {
-    try {
-      await axios.get('/api/auth/logout', {
-        withCredentials: true,
-      });
-    } catch {
-      // no-op
-    } finally {
-      dispatch(logoutSuccess());
-    }
-  };
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-bg text-text-primary">
-      <motion.header
-        initial={{ y: -40 }}
-        animate={{ y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="border-b border-border"
-      >
-        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6 cursor-pointer">
-          <div>
-            <h1 onClick={() => navigate("/")} className="text-lg font-semibold">
-              SiteNova.ai
-            </h1>
-          </div>
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => dispatch(toggleTheme())}
-              className="cursor-pointer rounded-xl border border-border px-3 py-1.5 text-sm font-medium transition hover:bg-surface"
-            >
-              {theme === "dark" ? "Light" : "Dark"}
-            </button>
-            <div className="cursor-pointer rounded-xl border border-border px-3 py-1.5 text-sm font-medium transition hover:bg-surface">
-              Pricing
-            </div>
-            <div
-              onClick={() => setShowLoginModal(true)}
-              className="cursor-pointer rounded-xl border border-border px-3 py-1.5 text-sm font-medium transition hover:bg-surface"
-            >
-              Get Started
-            </div>
-          </div>
-        </div>
-      </motion.header>
+    <div className="relative min-h-screen overflow-x-hidden bg-bg pt-16 text-text-primary">
+      <Navbar />
 
       <main className="mx-auto max-w-6xl px-6 py-14">
         <motion.section
@@ -87,7 +42,8 @@ const Home = () => {
         >
           <p className="mb-3 text-sm text-text-secondary">
             <span className="px-4 py-2 rounded-full text-secondary bg-secondary/10 border border-secondary/30">
-              Welcome, <span className="font-semibold">{user?.name || "Creator"}</span>!
+              Welcome,{" "}
+              <span className="font-semibold">{user?.name || "Creator"}</span>!
             </span>
           </p>
           <h2 className="text-4xl font-bold leading-tight md:text-6xl">
@@ -100,8 +56,17 @@ const Home = () => {
             website in seconds. Perfect for prototyping, portfolios, and small
             businesses.
           </p>
-          <button className="mt-8 rounded-xl bg-primary px-6 py-3 font-medium text-white transition hover:bg-primary-hover">
-            Get Started
+          <button
+            onClick={() => {
+              if (user) {
+                navigate("/dashboard");
+              } else {
+                setShowLoginModal(true);
+              }
+            }}
+            className="mt-8 rounded-xl bg-primary px-6 py-3 font-medium text-white transition hover:bg-primary-hover"
+          >
+            {user ? "Go to Dashboard" : "Get Started for Free"}
           </button>
         </motion.section>
 
@@ -133,7 +98,6 @@ const Home = () => {
         © {new Date().getFullYear()} SiteNova.ai
       </footer>
       <motion.div initial={{ opacity: 0 }}></motion.div>
-
       {showLoginModal && (
         <LoginModal
           open={showLoginModal}

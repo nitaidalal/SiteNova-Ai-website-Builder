@@ -1,19 +1,21 @@
-import React,{useEffect} from 'react'
+import React, { useEffect } from 'react'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import Home from './pages/Home'
-import Auth from './pages/Auth'
-import  { useSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
 import { Toaster } from 'react-hot-toast'
+import { useGetUserProfile } from './hooks/getUserProfile'
 
 const App = () => {
-  const {theme} = useSelector((state) => state.theme)
-  const {isAuthenticated} = useSelector((state) => state.auth)
+  const { theme } = useSelector((state) => state.theme)
+  const { isAuthenticated } = useSelector((state) => state.user)
+
+  // Fetch user profile on app mount
+  useGetUserProfile();
 
   // Set the initial theme on app load
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
   }, [theme]);
-
 
   return (
     <>
@@ -77,7 +79,7 @@ const App = () => {
         <Route
           path="/"
           element={
-            !isAuthenticated ? <Home /> : <Navigate to="/auth" replace />
+            !isAuthenticated ? <Home /> :<Home/> 
           }
         />
         {/* <Route path="/auth" element={isAuthenticated ? <Navigate to="/" replace /> : <Auth />} /> */}
