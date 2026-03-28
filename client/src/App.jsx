@@ -1,20 +1,22 @@
-import React, { useEffect } from 'react'
-import { Navigate, Route, Routes } from 'react-router-dom'
-import Home from './pages/Home'
-import { useSelector } from 'react-redux'
-import { Toaster } from 'react-hot-toast'
-import { useGetUserProfile } from './hooks/getUserProfile'
+import React, { useEffect } from "react";
+import { Route, Routes } from "react-router-dom";
+import Home from "./pages/Home";
+import { useSelector } from "react-redux";
+import { Toaster } from "react-hot-toast";
+import { useGetUserProfile } from "./hooks/getUserProfile";
+import Dashboard from "./pages/Dashboard";
+import ProtectedRoute from "./components/ProtectedRoute";
+import Generate from "./pages/Generate";
 
 const App = () => {
-  const { theme } = useSelector((state) => state.theme)
-  const { isAuthenticated } = useSelector((state) => state.user)
+  const { theme } = useSelector((state) => state.theme);
 
   // Fetch user profile on app mount
   useGetUserProfile();
 
   // Set the initial theme on app load
   useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
+    document.documentElement.setAttribute("data-theme", theme);
   }, [theme]);
 
   return (
@@ -76,16 +78,17 @@ const App = () => {
         }}
       />
       <Routes>
-        <Route
-          path="/"
-          element={
-            !isAuthenticated ? <Home /> :<Home/> 
-          }
-        />
-        {/* <Route path="/auth" element={isAuthenticated ? <Navigate to="/" replace /> : <Auth />} /> */}
+        {/* Public route */}
+        <Route path="/" element={<Home />} />
+
+        {/* Protected routes */}
+        <Route element={<ProtectedRoute />}>
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/generate" element={<Generate />} />
+        </Route>
       </Routes>
     </>
   );
-}
+};
 
-export default App
+export default App;
